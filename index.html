@@ -1,0 +1,186 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Binance Balance</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta1/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-giJF6kkoqNQ00vy+HMDP7azOuL0xtbfIcaT9wjKHr8RbDVddVHyTfAAsrekwKmP1" crossorigin="anonymous">
+    <style>
+    	* { box-sizing: border-box;}
+    </style>
+    
+  </head>
+  <body>
+
+    <div class="container">
+      <div class="row">
+        <div class="col-sm-9">
+          <div class="card">
+            <div class="card-header">
+              <strong>Eldeki Mallar</strong>
+            </div>
+            <div class="card-body">
+              <div class="table-responsive">
+                <table class="table table-bordered table-striped" id="mallar_table">
+                  <thead>
+                    <tr>
+                      <th>MAL</th>
+                      <th>ADET</th>
+                      <th>ALIŞ FİYATI</th>
+                      <th>MALİYET($)</th>
+                      <th>GÜNCEL FİYAT</th>
+                      <th>KAR ZARAR</th>
+                      <th>İŞLEM</th>
+                    </tr>
+                  </thead>
+                  <tbody></tbody>
+                  <tfoot>
+                    <tr>
+                      <td colspan="3">TOPLAM : </td>
+                      <td id="toplam_maliyet">...</td>
+                      <td></td>
+                      <td id="toplam_kar">...</td>
+                      <td></td>
+                    </tr>
+                  </tfoot>
+                </table>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="col-sm-3">
+          <div class="card">
+            <div class="card-header">
+              <strong>Yeni Mal Ekle</strong>
+            </div>
+            <div class="card-body">
+              <strong>SEMBOL</strong>
+              <input class="form-control form-control-sm" type="text" id="yeni_sembol">
+              <br>
+              <strong>MALİYET</strong>
+              <input class="form-control form-control-sm" type="number" id="yeni_maliyet">
+              <br>
+              <strong>ADET</strong>
+              <input class="form-control form-control-sm" type="number" id="yeni_adet">
+              <br>
+              <button class="btn btn-success btn-sm" onclick="ekle();">EKLE</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <script>
+      var MALLAR = [];
+      var SEMBOLLER = [];
+      function mallariIsle(){
+        var mallar = localStorage.getItem("mallar").split("/");
+
+        mallar.forEach(function(v,k){
+          var malBilgileri = v.split("|");
+          if(malBilgileri.length > 0 && malBilgileri[0] != ""){
+            MALLAR.push({
+              "sembol" : malBilgileri[0],
+              "maliyet" : malBilgileri[1],
+              "adet" : malBilgileri[2]
+            });
+            SEMBOLLER.push(malBilgileri[0].toLowerCase() + "usdt");
+          }
+        })
+
+        MALLAR.forEach(function(v,k){
+          var row = document.createElement("tr");
+              row.id = v.sembol.toUpperCase() + "USDT";
+              row.innerHTML = `<td>${v.sembol}</td><td class="adet">${v.adet}</td><td class="maliyet">${v.maliyet}</td><td class="maliyet_dolar">${parseFloat(parseFloat(v.maliyet) * parseFloat(v.adet)).toFixed(4)}</td><td class="guncel_fiyat"></td><td class="kar_zarar"></td><td><button class="btn btn-sm btn-danger" onclick="sil('${v.sembol}');">Sil</button></td>`;
+          document.querySelector("#mallar_table tbody").appendChild(row);
+        })
+
+        socketeBaglan();
+      }
+
+      function sil(sembol){
+        if(confirm("Bak sileriiim! Emin misun?")){
+          var mallar = localStorage.getItem("mallar").split("/");
+          var yeniMalListesi = "";
+          mallar.forEach(function(v,k){
+            var malBilgileri = v.split("|");
+            if(v != "" && malBilgileri[0] != sembol){
+              console.log(malBilgileri);
+              yeniMalListesi += `${malBilgileri[0]}|${malBilgileri[1]}|${malBilgileri[2]}/`;
+            }
+          });
+
+          localStorage.setItem("mallar", yeniMalListesi);
+          window.location.reload();
+        }
+      }
+
+      function socketeBaglan(){
+        var binanceSocketUrl  = `wss://stream.binance.com:9443/stream?streams=`;
+        SEMBOLLER.forEach(function(v,k){
+          binanceSocketUrl += `${v}@ticker`;
+          if(k != (SEMBOLLER.length - 1)){
+            binanceSocketUrl += `/`;
+          }
+        });
+
+        let socket = new WebSocket(binanceSocketUrl);
+        socket.onopen = function(e) {
+          console.log("Binance sockete baglanildi");
+        };
+
+        socket.onmessage = function(data) {
+          var data = JSON.parse(data.data);
+          var data = data.data;
+          handleData(data);
+        };
+      }
+
+      function handleData(data){
+        document.querySelector("#"+data.s).querySelector("td.guncel_fiyat").innerHTML = parseFloat(data.c);
+        var adet = parseFloat(document.querySelector("#"+data.s).querySelector("td.adet").innerHTML);
+        var maliyet = parseFloat(document.querySelector("#"+data.s).querySelector("td.maliyet").innerHTML);
+        document.querySelector("#"+data.s).querySelector("td.kar_zarar").innerHTML = parseFloat(adet * (parseFloat(data.c) - parseFloat(maliyet))).toFixed(4);
+
+        handleToplamlar();
+      }
+
+      function handleToplamlar(){
+        var rows = document.querySelectorAll("#mallar_table tbody tr");
+        var toplamMaliyet = 0;
+        var toplamKarZarar = 0;
+        rows.forEach(function(v,k){
+          toplamMaliyet  += parseFloat(v.querySelector(".maliyet_dolar").innerHTML);
+          toplamKarZarar += parseFloat(v.querySelector(".kar_zarar").innerHTML);
+        });
+
+        document.querySelector("#toplam_maliyet").innerHTML = parseFloat(toplamMaliyet).toFixed(4);
+        document.querySelector("#toplam_kar").innerHTML = parseFloat(toplamKarZarar).toFixed(4);
+
+      }
+
+      if(localStorage.getItem("mallar") != null){
+        mallariIsle();
+      }
+
+      function ekle(){
+        var yeniMal = {
+          sembol : document.querySelector("#yeni_sembol").value,
+          maliyet : document.querySelector("#yeni_maliyet").value,
+          adet : document.querySelector("#yeni_adet").value,
+        };
+
+        var cacheText = `${yeniMal.sembol}|${yeniMal.maliyet}|${yeniMal.adet}/`;
+
+        if(localStorage.getItem("mallar") == null){
+          localStorage.setItem("mallar", cacheText);
+        }else{
+          var eskiMallar = localStorage.getItem("mallar");
+          localStorage.setItem("mallar", eskiMallar+cacheText);
+        }
+        window.location.reload();
+      }
+    </script>
+
+  </body>
+</html>
