@@ -285,16 +285,16 @@
 
     <script>
       localforage.getItem('somekeyOther').then(function(value){
-        document.querySelector("#perde").innerHTML = value + "hedeee";;
+        document.querySelector("#perde").innerHTML = value + " GET";
       });
-      // localforage.setItem('somekeyOther', "test1").then(function (value) {
-      //   // Do other things once the value has been saved.
-      //   console.log(value);
-      //   document.querySelector("#perde").innerHTML = value;
-      // }).catch(function(err) {
-      //   // This code runs if there were any errors
-      //   console.log(err);
-      // });
+      localforage.setItem('somekeyOther', "test1").then(function (value) {
+        // Do other things once the value has been saved.
+        console.log(value);
+        document.querySelector("#perde").innerHTML = Date.now() + value;
+      }).catch(function(err) {
+        // This code runs if there were any errors
+        console.log(err);
+      });
     </script>
 
   </body>
