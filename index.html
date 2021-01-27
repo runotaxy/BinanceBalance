@@ -284,14 +284,17 @@
     </div>
 
     <script>
-      localforage.setItem('somekeyOther', {a : 1, b : 2, c : "hede"}).then(function (value) {
-        // Do other things once the value has been saved.
-        console.log(value);
-        document.querySelector("#perde").innerHTML = value;
-      }).catch(function(err) {
-        // This code runs if there were any errors
-        console.log(err);
+      localforage.getItem('somekeyOther').then(function(value){
+        document.querySelector("#perde").innerHTML = value + "hedeee";;
       });
+      // localforage.setItem('somekeyOther', "test1").then(function (value) {
+      //   // Do other things once the value has been saved.
+      //   console.log(value);
+      //   document.querySelector("#perde").innerHTML = value;
+      // }).catch(function(err) {
+      //   // This code runs if there were any errors
+      //   console.log(err);
+      // });
     </script>
 
   </body>
