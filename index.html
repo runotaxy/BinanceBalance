@@ -265,6 +265,11 @@
     </style>
     <div id="perde">
       <div id="perde_inner">
+        <div id="test" style="color:#fff;">
+          <button class="btn btn-sm btn-primary" onclick="test_set();">set</button> 
+          <button class="btn btn-sm btn-primary" onclick="test_get();">get</button>
+        </div>
+        <br>
         <div class="note">Kalan hak <span id="kalan_hak">4</span></div>
         <br>
         <div class="card">
@@ -284,17 +289,23 @@
     </div>
 
     <script>
-      localforage.getItem('somekeyOther').then(function(value){
-        document.querySelector("#perde").innerHTML = value + " GET";
-      });
-      localforage.setItem('somekeyOther', "test1").then(function (value) {
-        // Do other things once the value has been saved.
-        console.log(value);
-        document.querySelector("#perde").innerHTML = Date.now() + value;
-      }).catch(function(err) {
-        // This code runs if there were any errors
-        console.log(err);
-      });
+      function test_set(){
+        localforage.setItem('somekeyOther', "test1 --> " + Date.now()).then(function (value) {
+          // Do other things once the value has been saved.
+          console.log(value);
+          // document.querySelector("#perde").innerHTML = Date.now() + value;
+          alert("SET TO : " + "test1");
+        }).catch(function(err) {
+          // This code runs if there were any errors
+          console.log(err);
+        });
+      }
+
+      function test_get(){
+        localforage.getItem('somekeyOther').then(function(value){
+          alert(value + " GET")
+        });
+      }
     </script>
 
   </body>
