@@ -36,21 +36,17 @@
                     <tr>
                       <th>SEMBOL</th>
                       <th>ADET</th>
-                      <th>ALIŞ FİYATI</th>
-                      <th>MALİYET</th>
-                      <th>ANLIK DEĞER</th>
-                      <th>GÜNCEL FİYAT</th>
-                      <th>KAR ZARAR</th>
-                      <th>YÜZDE</th>
+                      <th style="min-width:200px;">FİYATLAR</th>
+                      <th style="min-width:200px;">MALİYETLER</th>
+                      <th style="min-width:200px;">KAR ZARAR</th>
                       <th>İŞLEM</th>
                     </tr>
                   </thead>
                   <tbody></tbody>
                   <tfoot>
                     <tr>
-                      <td colspan="6">TOPLAM : </td>
-                      <td id="toplam_kar">...</td>
-                      <td></td>
+                      <td colspan="4">TOPLAM : </td>
+                      <td id="toplam_kar" style="text-align: right; font-weight: 900;">...</td>
                       <td></td>
                     </tr>
                   </tfoot>
@@ -121,7 +117,28 @@
             var row = document.createElement("tr");
                 row.id = "row_"+v.id;
                 row.dataset.coin = v.sembol;
-                row.innerHTML = `<td>${v.sembol}</td><td class="adet">${v.adet}</td><td class="alis_fiyati">${v.alis_fiyati}</td><td class="maliyet_dolar">${parseFloat(parseFloat(v.alis_fiyati) * parseFloat(v.adet)).toFixed(4)}</td><td class="anlik_deger"></td><td class="guncel_fiyat"></td><td class="kar_zarar"></td><td class="kar_zarar_yuzde"></td><td><button class="btn btn-sm btn-danger" onclick="sil('${v.id}');">Sil</button> <button class="btn btn-sm btn-primary" onclick="duzenle('${v.id}');">Düzenle</button></td>`;
+                row.innerHTML = `
+                <td style="vertical-align:middle;">${v.sembol}</td>
+                <td style="vertical-align:middle;" class="adet">${v.adet}</td>
+                <td>
+                  <strong>ALIŞ:</strong> <span class="alis_fiyati" style="float:right;">${v.alis_fiyati}</span>
+                  <br/>
+                  <strong>GÜNCEL:</strong> <span class="guncel_fiyat" style="float:right;"></span>
+                </td>
+                <td class="">
+                  <strong>MALİYET:</strong> <span class="maliyet_dolar" style="float:right;">${parseFloat(parseFloat(v.alis_fiyati) * parseFloat(v.adet)).toFixed(4)}</span>
+                  <br/>
+                  <strong>ANLIK:</strong> <span class="anlik_deger" style="float:right;"></span>
+                </td>
+                <td>
+                   <strong>KAR/ZARAR:</strong> <span class="kar_zarar" style="float:right;"></span>
+                  <br/>
+                  <strong>YÜZDE:</strong> <span class="kar_zarar_yuzde" style="float:right;"></span>
+                </td>
+                <td style="vertical-align:middle;">
+                  <button class="btn btn-sm btn-danger" onclick="sil('${v.id}');">Sil</button> 
+                  <button class="btn btn-sm btn-primary" onclick="duzenle('${v.id}');">Düzenle</button>
+                </td>`;
             document.querySelector("#mallar_table tbody").appendChild(row);
           })
 
@@ -168,10 +185,10 @@
 
       function handleData(data){
         document.querySelectorAll("[data-coin='"+data.s+"']").forEach(function(v,k){
-          v.querySelector("td.guncel_fiyat").innerHTML = parseFloat(data.c);
-          var adet        = parseFloat(v.querySelector("td.adet").innerHTML);
-          var alis_fiyati = parseFloat(v.querySelector("td.alis_fiyati").innerHTML);
-          var maliyet     = parseFloat(v.querySelector("td.maliyet_dolar").innerHTML);
+          v.querySelector(".guncel_fiyat").innerHTML = parseFloat(data.c);
+          var adet        = parseFloat(v.querySelector(".adet").innerHTML);
+          var alis_fiyati = parseFloat(v.querySelector(".alis_fiyati").innerHTML);
+          var maliyet     = parseFloat(v.querySelector(".maliyet_dolar").innerHTML);
           var kar_zarar   = parseFloat(parseFloat(adet) * (parseFloat(data.c) - parseFloat(alis_fiyati))).toFixed(4);
           var kar_zarar_Y = parseFloat((kar_zarar * 100) / maliyet).toFixed(2);
           var anlik_deger = parseFloat(parseFloat(adet) * parseFloat(data.c)).toFixed(4);
@@ -181,9 +198,9 @@
           }else{
             $(v).addClass("table-danger")
           }
-          v.querySelector("td.kar_zarar").innerHTML = kar_zarar;
-          v.querySelector("td.kar_zarar_yuzde").innerHTML = kar_zarar_Y;
-          v.querySelector("td.anlik_deger").innerHTML = anlik_deger;
+          v.querySelector(".kar_zarar").innerHTML = kar_zarar;
+          v.querySelector(".kar_zarar_yuzde").innerHTML = kar_zarar_Y;
+          v.querySelector(".anlik_deger").innerHTML = anlik_deger;
         })
         handleToplamlar();
       }
