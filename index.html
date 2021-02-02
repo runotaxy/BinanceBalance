@@ -4,6 +4,7 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Binance Balance</title>
+    <link rel="shortcut icon" href="coin.png" />
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta1/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-giJF6kkoqNQ00vy+HMDP7azOuL0xtbfIcaT9wjKHr8RbDVddVHyTfAAsrekwKmP1" crossorigin="anonymous">
     <style>
     	* { box-sizing: border-box;}
@@ -21,34 +22,35 @@
   </head>
   <body>
 
-    <div class="container">
+    <div class="container-fluid">
       <div class="row">
         <div class="col-sm-9">
           <div class="card">
             <div class="card-header">
-              <strong>Eldeki Mallar</strong>
+              <strong>Sepetteki Coinler</strong>
             </div>
             <div class="card-body">
               <div class="table-responsive">
                 <table class="table table-bordered table-striped" id="mallar_table">
                   <thead>
                     <tr>
-                      <th>MAL</th>
+                      <th>SEMBOL</th>
                       <th>ADET</th>
                       <th>ALIŞ FİYATI</th>
-                      <th>MALİYET($)</th>
+                      <th>MALİYET</th>
                       <th>GÜNCEL FİYAT</th>
+                      <th>ANLIK DEĞER</th>
                       <th>KAR ZARAR</th>
+                      <th>YÜZDE</th>
                       <th>İŞLEM</th>
                     </tr>
                   </thead>
                   <tbody></tbody>
                   <tfoot>
                     <tr>
-                      <td colspan="3">TOPLAM : </td>
-                      <td id="toplam_maliyet">...</td>
-                      <td></td>
+                      <td colspan="6">TOPLAM : </td>
                       <td id="toplam_kar">...</td>
+                      <td></td>
                       <td></td>
                     </tr>
                   </tfoot>
@@ -60,14 +62,16 @@
         <div class="col-sm-3">
           <div class="card">
             <div class="card-header">
-              <strong>Yeni Mal Ekle</strong>
+              <strong>Yeni Coin Ekle</strong>
             </div>
             <div class="card-body">
               <strong>SEMBOL</strong>
-              <input class="form-control form-control-sm" type="text" id="yeni_sembol">
+              <div>
+                <select class="form-control form-control-sm" id="yeni_sembol"></select>
+              </div>
               <br>
-              <strong>MALİYET</strong>
-              <input class="form-control form-control-sm" type="number" id="yeni_maliyet">
+              <strong>ALIŞ FİYATI</strong>
+              <input class="form-control form-control-sm" type="number" id="yeni_alis_fiyati">
               <br>
               <strong>ADET</strong>
               <input class="form-control form-control-sm" type="number" id="yeni_adet">
@@ -79,55 +83,72 @@
       </div>
     </div>
 
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.13/css/select2.min.css" rel="stylesheet" />
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.13/js/select2.min.js"></script>
+
     <script>
+
+      $(function(){
+        $.get("https://api.binance.com/api/v3/ticker/price", {}, function(resp){
+          resp.forEach(function(v,k){
+            var opt = document.createElement("option");
+              opt.value         = v.symbol;
+              opt.innerHTML     = v.symbol;
+              opt.dataset.price = v.price;
+            document.querySelector("#yeni_sembol").appendChild(opt);
+            if(k == (resp.length - 1)){
+              $('#yeni_sembol').select2();
+            }
+          })
+        })
+
+        $("#yeni_sembol").on("change", function(){
+          $("#yeni_alis_fiyati").val(parseFloat($("#yeni_sembol").find(':selected').data("price")));
+        })
+      }) // document ready
       var MALLAR = [];
       var SEMBOLLER = [];
       function mallariIsle(){
-        var mallar = localStorage.getItem("mallar").split("/");
 
-        mallar.forEach(function(v,k){
-          var malBilgileri = v.split("|");
-          if(malBilgileri.length > 0 && malBilgileri[0] != ""){
-            MALLAR.push({
-              "sembol" : malBilgileri[0],
-              "maliyet" : malBilgileri[1],
-              "adet" : malBilgileri[2]
-            });
-            SEMBOLLER.push(malBilgileri[0].toLowerCase() + "usdt");
-          }
-        })
+        var mallar = localforage.getItem("mallar").then(function(mallarList){
+          mallarList.forEach(function(v,k){
+            MALLAR.push(v);
+            SEMBOLLER.push(v.sembol.toLowerCase());
+          })
+          MALLAR.forEach(function(v,k){
+            var row = document.createElement("tr");
+                row.id = "row_"+v.id;
+                row.dataset.coin = v.sembol;
+                row.innerHTML = `<td>${v.sembol}</td><td class="adet">${v.adet}</td><td class="alis_fiyati">${v.alis_fiyati}</td><td class="maliyet_dolar">${parseFloat(parseFloat(v.alis_fiyati) * parseFloat(v.adet)).toFixed(4)}</td><td class="anlik_deger"></td><td class="guncel_fiyat"></td><td class="kar_zarar"></td><td class="kar_zarar_yuzde"></td><td><button class="btn btn-sm btn-danger" onclick="sil('${v.id}');">Sil</button> <button class="btn btn-sm btn-primary" onclick="duzenle('${v.id}');">Düzenle</button></td>`;
+            document.querySelector("#mallar_table tbody").appendChild(row);
+          })
 
-        MALLAR.forEach(function(v,k){
-          var row = document.createElement("tr");
-              row.id = v.sembol.toUpperCase() + "USDT";
-              row.innerHTML = `<td>${v.sembol}</td><td class="adet">${v.adet}</td><td class="maliyet">${v.maliyet}</td><td class="maliyet_dolar">${parseFloat(parseFloat(v.maliyet) * parseFloat(v.adet)).toFixed(4)}</td><td class="guncel_fiyat"></td><td class="kar_zarar"></td><td><button class="btn btn-sm btn-danger" onclick="sil('${v.sembol}');">Sil</button></td>`;
-          document.querySelector("#mallar_table tbody").appendChild(row);
-        })
-
-        socketeBaglan();
+          socketeBaglan();
+        });
       }
 
-      function sil(sembol){
-        if(confirm("Bak sileriiim! Emin misun?")){
-          var mallar = localStorage.getItem("mallar").split("/");
-          var yeniMalListesi = "";
-          mallar.forEach(function(v,k){
-            var malBilgileri = v.split("|");
-            if(v != "" && malBilgileri[0] != sembol){
-              console.log(malBilgileri);
-              yeniMalListesi += `${malBilgileri[0]}|${malBilgileri[1]}|${malBilgileri[2]}/`;
-            }
+      function sil(id){
+        if(confirm("Enstruman kalıcı olarak silinecek, emin misiniz?")){
+          localforage.getItem("mallar").then(function(value){
+            var delete_key = 0;
+            value.forEach(function(v,k){
+              if(v.id == id){
+                delete_key = k;
+              }
+            })
+            value.splice(delete_key, 1);
+            localforage.setItem("mallar", value);
+            window.location.reload();
           });
-
-          localStorage.setItem("mallar", yeniMalListesi);
-          window.location.reload();
         }
       }
 
       function socketeBaglan(){
         var binanceSocketUrl  = `wss://stream.binance.com:9443/stream?streams=`;
         SEMBOLLER.forEach(function(v,k){
-          binanceSocketUrl += `${v}@ticker`;
+          binanceSocketUrl += `${v.toLowerCase()}@ticker`;
           if(k != (SEMBOLLER.length - 1)){
             binanceSocketUrl += `/`;
           }
@@ -146,11 +167,24 @@
       }
 
       function handleData(data){
-        document.querySelector("#"+data.s).querySelector("td.guncel_fiyat").innerHTML = parseFloat(data.c);
-        var adet = parseFloat(document.querySelector("#"+data.s).querySelector("td.adet").innerHTML);
-        var maliyet = parseFloat(document.querySelector("#"+data.s).querySelector("td.maliyet").innerHTML);
-        document.querySelector("#"+data.s).querySelector("td.kar_zarar").innerHTML = parseFloat(adet * (parseFloat(data.c) - parseFloat(maliyet))).toFixed(4);
-
+        document.querySelectorAll("[data-coin='"+data.s+"']").forEach(function(v,k){
+          v.querySelector("td.guncel_fiyat").innerHTML = parseFloat(data.c);
+          var adet        = parseFloat(v.querySelector("td.adet").innerHTML);
+          var alis_fiyati = parseFloat(v.querySelector("td.alis_fiyati").innerHTML);
+          var maliyet     = parseFloat(v.querySelector("td.maliyet_dolar").innerHTML);
+          var kar_zarar   = parseFloat(parseFloat(adet) * (parseFloat(data.c) - parseFloat(alis_fiyati))).toFixed(4);
+          var kar_zarar_Y = parseFloat((kar_zarar * 100) / maliyet).toFixed(2);
+          var anlik_deger = parseFloat(parseFloat(adet) * parseFloat(data.c)).toFixed(4);
+          $(v).removeClass("table-success table-danger");
+          if(kar_zarar_Y >= 0){
+            $(v).addClass("table-success");
+          }else{
+            $(v).addClass("table-danger")
+          }
+          v.querySelector("td.kar_zarar").innerHTML = kar_zarar;
+          v.querySelector("td.kar_zarar_yuzde").innerHTML = kar_zarar_Y;
+          v.querySelector("td.anlik_deger").innerHTML = anlik_deger;
+        })
         handleToplamlar();
       }
 
@@ -159,34 +193,50 @@
         var toplamMaliyet = 0;
         var toplamKarZarar = 0;
         rows.forEach(function(v,k){
-          toplamMaliyet  += parseFloat(v.querySelector(".maliyet_dolar").innerHTML);
-          toplamKarZarar += parseFloat(v.querySelector(".kar_zarar").innerHTML);
+          if(parseFloat(v.querySelector(".kar_zarar").innerHTML) != NaN){
+            toplamMaliyet  += parseFloat(v.querySelector(".maliyet_dolar").innerHTML);
+            toplamKarZarar += parseFloat(v.querySelector(".kar_zarar").innerHTML);
+          }else{
+            toplamMaliyet  += 0;
+            toplamKarZarar += 0;
+          }
         });
 
-        document.querySelector("#toplam_maliyet").innerHTML = parseFloat(toplamMaliyet).toFixed(4);
+        // document.querySelector("#toplam_maliyet").innerHTML = parseFloat(toplamMaliyet).toFixed(4);
         document.querySelector("#toplam_kar").innerHTML = parseFloat(toplamKarZarar).toFixed(4);
 
       }
 
-      if(localStorage.getItem("mallar") != null){
-        mallariIsle();
-      }
+      localforage.getItem("mallar").then(function(value){
+        if(value != null){
+          if(value.length > 0){
+            mallariIsle();          
+          }
+        }else{
+          localforage.setItem("mallar", []);
+        }
+      })
 
       function ekle(){
-        var yeniMal = {
-          sembol : document.querySelector("#yeni_sembol").value,
-          maliyet : document.querySelector("#yeni_maliyet").value,
-          adet : document.querySelector("#yeni_adet").value,
-        };
 
-        var cacheText = `${yeniMal.sembol}|${yeniMal.maliyet}|${yeniMal.adet}/`;
+        localforage.getItem("mallar").then(function(value){
+          if(value.length == 0){
+            var mallarList = [yeniMal];
+          }else{
+            var yeniMal = {
+              sembol      : document.querySelector("#yeni_sembol").value,
+              alis_fiyati : document.querySelector("#yeni_alis_fiyati").value,
+              adet        : document.querySelector("#yeni_adet").value,
+              id          : Date.now()
+            };
+            value.push(yeniMal);
+            var mallarList = value;
+          }
 
-        if(localStorage.getItem("mallar") == null){
-          localStorage.setItem("mallar", cacheText);
-        }else{
-          var eskiMallar = localStorage.getItem("mallar");
-          localStorage.setItem("mallar", eskiMallar+cacheText);
-        }
+          localforage.setItem("mallar", mallarList).then(function(value){
+            console.log("EKLENDI : ", value);
+          });
+        });
         window.location.reload();
       }
 
