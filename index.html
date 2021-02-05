@@ -303,11 +303,11 @@
           var kar_zarar   = parseFloat(parseFloat(adet) * (parseFloat(data.c) - parseFloat(alis_fiyati))).toFixed(4);
           var kar_zarar_Y = parseFloat((kar_zarar * 100) / maliyet).toFixed(2);
           var anlik_deger = parseFloat(parseFloat(adet) * parseFloat(data.c)).toFixed(4);
-          $(v).removeClass("table-success table-danger");
+          $(v).removeClass("bg-success bg-danger");
           if(kar_zarar_Y >= 0){
-            $(v).addClass("table-success");
+            $(v).addClass("bg-success");
           }else{
-            $(v).addClass("table-danger")
+            $(v).addClass("bg-danger")
           }
           v.querySelector(".kar_zarar").innerHTML = kar_zarar;
           v.querySelector(".kar_zarar_yuzde").innerHTML = kar_zarar_Y;
