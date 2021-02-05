@@ -6,6 +6,7 @@
     <title>Binance Balance</title>
     <link rel="shortcut icon" href="coin.png" />
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta1/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-giJF6kkoqNQ00vy+HMDP7azOuL0xtbfIcaT9wjKHr8RbDVddVHyTfAAsrekwKmP1" crossorigin="anonymous">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/2.6.0/umd/popper.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/5.0.0-beta1/js/bootstrap.min.js"></script>
     <style>
     	* { box-sizing: border-box;}
@@ -270,15 +271,18 @@
               <strong>YÜZDE:</strong> <span class="kar_zarar_yuzde" style="float:right;"></span>
             </td>
             <td style="vertical-align:middle; max-width:80px; text-align:right;">
-              <button class="btn btn-sm btn-danger" onclick="sil('${id}');">
-                <svg xmlns="http://www.w3.org/2000/svg" style="fill:#fff;" width="16" height="16" viewBox="0 0 24 24"><path d="M3 6v18h18v-18h-18zm5 14c0 .552-.448 1-1 1s-1-.448-1-1v-10c0-.552.448-1 1-1s1 .448 1 1v10zm5 0c0 .552-.448 1-1 1s-1-.448-1-1v-10c0-.552.448-1 1-1s1 .448 1 1v10zm5 0c0 .552-.448 1-1 1s-1-.448-1-1v-10c0-.552.448-1 1-1s1 .448 1 1v10zm4-18v2h-20v-2h5.711c.9 0 1.631-1.099 1.631-2h5.315c0 .901.73 2 1.631 2h5.712z"/></svg>
-              </button> 
-              <button class="btn btn-sm btn-primary" onclick="duzenle('${id}');">
-                <svg xmlns="http://www.w3.org/2000/svg" style="fill:#fff;" width="18" height="18" viewBox="0 0 24 24"><path d="M12 0c-6.627 0-12 5.373-12 12s5.373 12 12 12 12-5.373 12-12-5.373-12-12-12zm-5 17l1.006-4.036 3.106 3.105-4.112.931zm5.16-1.879l-3.202-3.202 5.841-5.919 3.201 3.2-5.84 5.921z"/></svg>
-              </button>
-              <button class="btn btn-sm btn-dark" onclick="sat('${id}');">
-                <svg xmlns="http://www.w3.org/2000/svg" style="fill:#fff;" width="18" height="18" viewBox="0 0 24 24"><path d="M12 0c-6.627 0-12 5.373-12 12s5.373 12 12 12 12-5.373 12-12-5.373-12-12-12zm-5 17l1.006-4.036 3.106 3.105-4.112.931zm5.16-1.879l-3.202-3.202 5.841-5.919 3.201 3.2-5.84 5.921z"/></svg>
-              </button>
+              
+              <div class="dropdown">
+                <button class="btn btn-primary dropdown-toggle btn-sm" type="button" id="dropdownMenuButton_${id}" data-bs-toggle="dropdown" aria-expanded="false">
+                  <svg xmlns="http://www.w3.org/2000/svg" style="fill:#fff;" width="16" height="16" viewBox="0 0 24 24"><path d="M24 6h-24v-4h24v4zm0 4h-24v4h24v-4zm0 8h-24v4h24v-4z"/></svg>
+                </button>
+                <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton_${id}">
+                  <li><h6 class="dropdown-header">Coin İşlemleri</h6></li>
+                  <li onclick="sil('${id}');"><a class="dropdown-item" href="#">Sil</a></li>
+                  <li onclick="duzenle('${id}');"><a class="dropdown-item" href="#">Düzenle</a></li>
+                  <li onclick="sat('${id}');"><a class="dropdown-item" href="#">Satıldı</a></li>
+                </ul>
+              </div>
             </td>`;
         document.querySelector("#mallar_table tbody").appendChild(row);
       }
