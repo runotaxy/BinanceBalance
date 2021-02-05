@@ -128,7 +128,8 @@
                   <tbody></tbody>
                   <tfoot>
                     <tr>
-                      <td colspan="4">TOPLAM : </td>
+                      <td colspan="3">TOPLAM : </td>
+                      <td id="toplam_maliyet" style="text-align: right; font-weight: 900;">...</td>
                       <td id="toplam_kar" style="text-align: right; font-weight: 900;">...</td>
                       <td></td>
                     </tr>
@@ -398,6 +399,7 @@
           }
         });
         document.querySelector("#toplam_kar").innerHTML = parseFloat(toplamKarZarar).toFixed(4);
+        document.querySelector("#toplam_maliyet").innerHTML = parseFloat(toplamMaliyet).toFixed(4);
         if(parseFloat(toplamEder).toFixed(4) != NaN){
           document.querySelector("#toplam_eder").innerHTML = parseFloat(toplamEder).toFixed(4);
         }
