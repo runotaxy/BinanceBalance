@@ -110,7 +110,7 @@
         <div class="col-sm-12">
           <div class="card">
             <div class="card-header">
-              <strong>Sepetteki Coinler</strong>
+              <strong>Sepetteki Coinler ($<span id="toplam_eder"></span>)</strong>
             </div>
             <div class="card-body" style="padding:0px;">
               <div class="table-responsive">
@@ -386,16 +386,21 @@
         var rows = document.querySelectorAll("#mallar_table tbody tr");
         var toplamMaliyet = 0;
         var toplamKarZarar = 0;
+        var toplamEder = 0;
         rows.forEach(function(v,k){
           if(parseFloat(v.querySelector(".kar_zarar").innerHTML) != NaN){
             toplamMaliyet  += parseFloat(v.querySelector(".maliyet_dolar").innerHTML);
             toplamKarZarar += parseFloat(v.querySelector(".kar_zarar").innerHTML);
+            toplamEder     += parseFloat(v.querySelector(".anlik_deger").innerHTML);
           }else{
             toplamMaliyet  += 0;
             toplamKarZarar += 0;
           }
         });
         document.querySelector("#toplam_kar").innerHTML = parseFloat(toplamKarZarar).toFixed(4);
+        if(parseFloat(toplamEder).toFixed(4) != NaN){
+          document.querySelector("#toplam_eder").innerHTML = parseFloat(toplamEder).toFixed(4);
+        }
       }
 
       function perdeyiKaldir(){
