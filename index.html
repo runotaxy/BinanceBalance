@@ -86,7 +86,7 @@
           <div class="collapse navbar-collapse" id="navbarSupportedContent">
             <ul class="navbar-nav me-auto mb-2 mb-lg-0">
               <li class="nav-item">
-                <a class="nav-link" onclick="setTimeout(function(){ $('#yeni_sembol').select2(); }, 1200)" aria-current="page" href="#" data-bs-toggle="modal" data-bs-target="#yeniCoinModal">Yeni Coin</a>
+                <a class="nav-link" onclick="setTimeout(function(){ $('#yeni_sembol').select2({ dropdownParent: $('#yeniCoinModal') }); }, 1200)" aria-current="page" href="#" data-bs-toggle="modal" data-bs-target="#yeniCoinModal">Yeni Coin</a>
               </li>
               <li class="nav-item">
                 <a class="nav-link" aria-current="page" href="#" data-bs-toggle="modal" data-bs-target="#yapilacaklarModal">Yapılacaklar</a>
@@ -300,7 +300,7 @@
               opt.dataset.price = v.price;
             document.querySelector("#yeni_sembol").appendChild(opt);
             if(k == (resp.length - 1)){
-              $('#yeni_sembol').select2();
+              $('#yeni_sembol').select2({ dropdownParent: $('#yeniCoinModal') });
             }
           })
         })
@@ -309,7 +309,7 @@
           $("#yeni_alis_fiyati").val(parseFloat($("#yeni_sembol").find(':selected').data("price")));
         })
 
-        $('#yeni_sembol').select2();
+        $('#yeni_sembol').select2({ dropdownParent: $('#yeniCoinModal') });
       }) // document ready
       var MALLAR = [];
       var SEMBOLLER = [];
