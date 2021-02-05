@@ -64,7 +64,7 @@
             </div>
             <div class="card-body">
               <div class="table-responsive">
-                <table class="table table-bordered table-striped table-dark" id="mallar_table">
+                <table class="table table-bordered table-striped" id="mallar_table">
                   <thead>
                     <tr>
                       <th>SEMBOL</th>
@@ -303,11 +303,11 @@
           var kar_zarar   = parseFloat(parseFloat(adet) * (parseFloat(data.c) - parseFloat(alis_fiyati))).toFixed(4);
           var kar_zarar_Y = parseFloat((kar_zarar * 100) / maliyet).toFixed(2);
           var anlik_deger = parseFloat(parseFloat(adet) * parseFloat(data.c)).toFixed(4);
-          $(v).removeClass("bg-success bg-danger");
+          $(v).removeClass("table-success table-danger");
           if(kar_zarar_Y >= 0){
-            $(v).addClass("bg-success");
+            $(v).addClass("table-success");
           }else{
-            $(v).addClass("bg-danger")
+            $(v).addClass("table-danger")
           }
           v.querySelector(".kar_zarar").innerHTML = kar_zarar;
           v.querySelector(".kar_zarar_yuzde").innerHTML = kar_zarar_Y;
