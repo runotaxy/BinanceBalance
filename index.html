@@ -141,7 +141,7 @@
           <br/>
           <div class="card">
             <div class="card-header">
-              <strong>Geçmiş İşlemler</strong>
+              <strong>Geçmiş İşlemler ($<span id="archieve_toplam_kar"></span> kar elde edildi)</strong>
             </div>
             <div class="card-body" style="padding:0px;">
               <div class="table-responsive">
@@ -250,11 +250,14 @@
 
       async function getUserArchieve(){
         const snapshot = await db.collection('users').doc(currentUser.uid).collection("archieve").get()
+        var totalArchieveKar = 0;
         snapshot.docs.map(function(doc){
           var docData = doc.data();
+          totalArchieveKar += docData.kar_zarar;
           SEMBOLLER.push(docData.symbol.toLowerCase());
           addToArchieveTable(docData, doc.id);
         });
+        $("#archieve_toplam_kar").text(parseFloat(totalArchieveKar).toFixed(4));
       }
 
       function createFirstTimeDocForUser(){
@@ -527,6 +530,7 @@
               <li>Ana tablodaki düzenle butonu çalıştırılacak</li>
               <li><del>Geçmiş işlemler tablosu çalıştırılacak.</del></li>
               <li><del>Geçmiş işlemler tablosuna göndemek için; ana tablodaki işlemler kısmına, satıldı butonu eklenecek.</del></li>
+              <li><del>Arşivden silme eklenecek</del></li>
               <li>Tablo sıralama özelliği eklenecek</li>
             </ol>
           </div>
