@@ -145,14 +145,17 @@
             </div>
             <div class="card-body" style="padding:0px;">
               <div class="table-responsive">
-                <table class="table table-striped" id="gecmis_islemler" style="margin-bottom: 0px;">
+                <table class="table table-striped" id="archieve_table" style="margin-bottom: 0px;">
                   <thead>
                     <tr>
                       <th>SEMBOL</th>
-                      <th>ADET</th>
-                      <th style="min-width:200px;">ALIŞ</th>
-                      <th style="min-width:200px;">SATIŞ</th>
-                      <th style="min-width:200px;">KAR ZARAR</th>
+                      <th>ALIŞ</th>
+                      <th>MİKTAR</th>
+                      <th>MALİYET</th>
+                      <th>SATIŞ</th>
+                      <th>SATIŞ EDER</th>
+                      <th>KAR/ZARAR</th>
+                      <th>YÜZDE</th>
                     </tr>
                   </thead>
                   <tbody></tbody>
@@ -215,6 +218,7 @@
           currentUser = user;
           checkUsersCollection();
           getUserCoins();
+          getUserArchieve();
           perdeyiKaldir();
           $("#user_email").text(user.email);
           $("#main").fadeIn();
@@ -243,6 +247,15 @@
         socketeBaglan();
       }
 
+      async function getUserArchieve(){
+        const snapshot = await db.collection('users').doc(currentUser.uid).collection("archieve").get()
+        snapshot.docs.map(function(doc){
+          var docData = doc.data();
+          SEMBOLLER.push(docData.symbol.toLowerCase());
+          addToArchieveTable(docData, doc.id);
+        });
+      }
+
       function createFirstTimeDocForUser(){
         db.collection("users").doc(currentUser.uid)
           .set({ email : currentUser.email })
@@ -254,7 +267,7 @@
             row.id = "row_"+id;
             row.dataset.coin = v.symbol;
             row.innerHTML = `
-            <td style="vertical-align:middle;"><h5><span class="badge bg-dark text-white">${v.symbol}</span></h5></td>
+            <td style="vertical-align:middle;"><h5><span class="badge bg-dark text-white sembol">${v.symbol}</span></h5></td>
             <td style="vertical-align:middle;" class="adet">${v.quantity}</td>
             <td>
               <strong>ALIŞ:</strong> <span class="alis_fiyati" style="float:right;">${v.bought_price}</span>
@@ -281,16 +294,32 @@
                   <li><h6 class="dropdown-header">Coin İşlemleri</h6></li>
                   <li onclick="sil('${id}');"><a class="dropdown-item" href="#">Sil</a></li>
                   <li onclick="duzenle('${id}');"><a class="dropdown-item" href="#">Düzenle</a></li>
-                  <li onclick="sat('${id}');"><a class="dropdown-item" href="#">Satıldı</a></li>
+                  <li onclick="sat('${id}', this);"><a data-bs-toggle="modal" data-bs-target="#coinSatModal" class="dropdown-item" href="#">Satıldı</a></li>
                 </ul>
               </div>
             </td>`;
         document.querySelector("#mallar_table tbody").appendChild(row);
       }
+
+      function addToArchieveTable(v, id){
+        var row = document.createElement("tr");
+            row.innerHTML = `
+              <td>${v.symbol}</td>
+              <td>${v.alis_fiyati}</td>
+              <td>${v.miktar}</td>
+              <td>${v.maliyet}</td>
+              <td>${v.satis_fiyati}</td>
+              <td>${v.satis_eder}</td>
+              <td>${v.kar_zarar}</td>
+              <td>${v.kar_zarar_yuzde}</td>
+            `;
+        document.querySelector("#archieve_table tbody").appendChild(row);
+      }
     </script>
 
     <script>
       var currentUser = null;
+      var satisData = null;
 
       $(function(){
         $.get("https://api.binance.com/api/v3/ticker/price", {}, function(resp){
@@ -337,6 +366,45 @@
           .add(newInstrument)
           .then(function(){
             window.location.reload();
+          })
+      }
+
+      function sat(id, btn){
+        var row = $(btn).parent().parent().parent().parent();
+        var data = {
+          symbol      : $(row).find(".sembol").text(),
+          alis_fiyati : parseFloat($(row).find(".alis_fiyati").text()),
+          miktar      : parseFloat($(row).find(".adet").text()),
+          maliyet     : parseFloat(parseFloat($(row).find(".alis_fiyati").text()) * parseFloat($(row).find(".adet").text())),
+          son_fiyat   : parseFloat($(row).find(".guncel_fiyat").text()),
+          alis_id     : id
+        };
+        $(".satisText").html(`
+          <strong>SEMBOL :</strong> ${data.symbol}<br/>
+          <strong>ALIŞ FİYATI :</strong> ${data.alis_fiyati}<br/>
+          <strong>MİKTAR :</strong> ${data.miktar}<br/>
+          <strong>MALİYET :</strong> ${data.maliyet}
+        `);
+        $("#coin_satis_fiyati").val(data.son_fiyat);
+        satisData = data;;
+      }
+
+      function archieve(){
+        satisData.satis_fiyati = parseFloat($("#coin_satis_fiyati").val());
+        satisData.satis_eder = parseFloat(satisData.miktar) * satisData.satis_fiyati; 
+        satisData.kar_zarar = satisData.satis_eder - parseFloat(satisData.maliyet); 
+        satisData.kar_zarar_yuzde = (satisData.kar_zarar * 100) / satisData.maliyet;
+
+        db.collection("users").doc(currentUser.uid)
+          .collection("archieve").add(satisData)
+          .then(function(resp){
+            sil(satisData.alis_id);
+            var satModal = document.getElementById('coinSatModal')
+            var modal = bootstrap.Modal.getInstance(satModal);
+            modal.hide();
+          })
+          .catch(err=>{
+            console.log(err);
           })
       }
 
@@ -468,6 +536,26 @@
           </div>
           <div class="modal-footer">
             <button type="button" class="btn btn-dark" data-bs-dismiss="modal">Close</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="modal fade" id="coinSatModal" tabindex="-1" aria-labelledby="coinSatModal" aria-hidden="true">
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title" id="coinSatModal">Satış</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+          </div>
+          <div class="modal-body">
+            <div class="satisText alert alert-warning alert-dismissible fade show" role="alert"></div>
+            <br>
+            <strong>SATIŞ FİYATI</strong>
+            <input class="form-control form-control-sm" type="number" id="coin_satis_fiyati">
+          </div>
+          <div class="modal-footer">
+            <button class="btn btn-success" onclick="archieve();">Arşive Ekle</button>
           </div>
         </div>
       </div>
