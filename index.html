@@ -156,6 +156,7 @@
                       <th>SATIŞ EDER</th>
                       <th>KAR/ZARAR</th>
                       <th>YÜZDE</th>
+                      <th style="text-align: right;">İŞLEM</th>
                     </tr>
                   </thead>
                   <tbody></tbody>
@@ -285,7 +286,6 @@
               <strong>YÜZDE:</strong> <span class="kar_zarar_yuzde" style="float:right;"></span>
             </td>
             <td style="vertical-align:middle; max-width:80px; text-align:right;">
-              
               <div class="dropdown">
                 <button class="btn btn-primary dropdown-toggle btn-sm" type="button" id="dropdownMenuButton_${id}" data-bs-toggle="dropdown" aria-expanded="false">
                   <svg xmlns="http://www.w3.org/2000/svg" style="fill:#fff;" width="16" height="16" viewBox="0 0 24 24"><path d="M24 6h-24v-4h24v4zm0 4h-24v4h24v-4zm0 8h-24v4h24v-4z"/></svg>
@@ -303,15 +303,27 @@
 
       function addToArchieveTable(v, id){
         var row = document.createElement("tr");
+            row.id = `archieve_row_${id}`;
             row.innerHTML = `
               <td>${v.symbol}</td>
               <td>${v.alis_fiyati}</td>
               <td>${v.miktar}</td>
-              <td>${v.maliyet}</td>
+              <td>${parseFloat(v.maliyet).toFixed(4)}</td>
               <td>${v.satis_fiyati}</td>
-              <td>${v.satis_eder}</td>
-              <td>${v.kar_zarar}</td>
-              <td>${v.kar_zarar_yuzde}</td>
+              <td>${parseFloat(v.satis_eder).toFixed(4)}</td>
+              <td>${parseFloat(v.kar_zarar).toFixed(4)}</td>
+              <td>${parseFloat(v.kar_zarar_yuzde).toFixed(2)}</td>
+              <td style="vertical-align:middle; max-width:80px; text-align:right;">
+              <div class="dropdown">
+                <button class="btn btn-primary dropdown-toggle btn-sm" type="button" id="dropdownMenuButton_${id}" data-bs-toggle="dropdown" aria-expanded="false">
+                  <svg xmlns="http://www.w3.org/2000/svg" style="fill:#fff;" width="16" height="16" viewBox="0 0 24 24"><path d="M24 6h-24v-4h24v4zm0 4h-24v4h24v-4zm0 8h-24v4h24v-4z"/></svg>
+                </button>
+                <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton_${id}">
+                  <li><h6 class="dropdown-header">Arşiv İşlemleri</h6></li>
+                  <li onclick="archieve_sil('${id}');"><a class="dropdown-item" href="#">Sil</a></li>
+                </ul>
+              </div>
+            </td>
             `;
         document.querySelector("#archieve_table tbody").appendChild(row);
       }
@@ -351,6 +363,17 @@
             .delete()
             .then(function(){
               $(`#row_${id}`).remove();
+            })
+        }
+      }
+
+      function archieve_sil(id){
+        if(confirm("Arşiv satırı kalıcı olarak silinecek, emin misiniz?")){
+          db.collection("users").doc(currentUser.uid)
+            .collection("archieve").doc(id)
+            .delete()
+            .then(function(){
+              $(`#archieve_row_${id}`).remove();
             })
         }
       }
@@ -398,8 +421,9 @@
         db.collection("users").doc(currentUser.uid)
           .collection("archieve").add(satisData)
           .then(function(resp){
+            addToArchieveTable(satisData, satisData.alis_id);
             sil(satisData.alis_id);
-            var satModal = document.getElementById('coinSatModal')
+            var satModal = document.getElementById('coinSatModal');
             var modal = bootstrap.Modal.getInstance(satModal);
             modal.hide();
           })
