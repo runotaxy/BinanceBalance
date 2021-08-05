@@ -496,7 +496,11 @@
         document.querySelector("#toplam_kar").innerHTML = parseFloat(toplamKarZarar).toFixed(4);
         document.querySelector("#toplam_maliyet").innerHTML = parseFloat(toplamMaliyet).toFixed(4);
         if(parseFloat(toplamEder).toFixed(4) != NaN){
-          document.querySelector("#toplam_eder").innerHTML = parseFloat(toplamEder).toFixed(4);
+          let toplamm = parseFloat(toplamEder).toFixed(2);
+          if(!isNaN(toplamm)){
+            document.querySelector("#toplam_eder").innerHTML = toplamm;
+            document.title = `$${toplamm} ($${parseFloat(toplamKarZarar).toFixed(2)})`;
+          }
         }
       }
 
