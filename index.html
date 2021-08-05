@@ -246,6 +246,7 @@
           addToTable(docData, doc.id);
         });
         socketeBaglan();
+        activateTooltips();
       }
 
       async function getUserArchieve(){
@@ -284,7 +285,7 @@
               <strong>ANLIK:</strong> <span class="anlik_deger badge bg-dark" style="float:right;"></span>
             </td>
             <td>
-               <strong>KAR/ZARAR:</strong> <span class="kar_zarar" style="float:right;"></span>
+               <strong data-bs-toggle="tooltip" data-bs-placement="right" title="${v.symbol}">KAR/ZARAR:</strong> <span class="kar_zarar" style="float:right;"></span>
               <br/>
               <strong>YÜZDE:</strong> <span class="kar_zarar_yuzde" style="float:right;"></span>
             </td>
@@ -343,7 +344,9 @@
               opt.value         = v.symbol;
               opt.innerHTML     = v.symbol;
               opt.dataset.price = v.price;
-            document.querySelector("#yeni_sembol").appendChild(opt);
+              if(v.symbol.includes("USDT")){
+                document.querySelector("#yeni_sembol").appendChild(opt);
+              }
             if(k == (resp.length - 1)){
               $('#yeni_sembol').select2({ dropdownParent: $('#yeniCoinModal') });
             }
@@ -561,6 +564,13 @@
         $("#tv_chart_container").empty();
         $("#trading_view_js").remove();
       }
+
+      function activateTooltips(){
+        var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'))
+        var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
+          return new bootstrap.Tooltip(tooltipTriggerEl)
+        })
+      }
     </script>
    
 
@@ -595,6 +605,10 @@
             <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
           </div>
           <div class="modal-body">
+            <div class="alert alert-warning alert-dismissible fade show" role="alert">
+              NOT: <strong>Sadece USDT pariteleri eklenebilir.</strong> BTC ve TRY pariteleri şu an eklenemiyor.
+            </div>
+            <br>
             <strong>SEMBOL</strong>
             <div>
               <select class="form-control form-control-sm" id="yeni_sembol"></select>
