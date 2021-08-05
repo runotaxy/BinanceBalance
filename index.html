@@ -110,7 +110,7 @@
         <div class="col-sm-12">
           <div class="card">
             <div class="card-header">
-              <strong>Sepetteki Coinler ($<span id="toplam_eder"></span>)</strong>
+              <strong>Sepetteki Coinler ($<span id="toplam_eder"><small>hesaplanıyor...</small></span>)</strong>
             </div>
             <div class="card-body" style="padding:0px;">
               <div class="table-responsive">
@@ -439,7 +439,7 @@
       }
 
       function socketeBaglan(){
-        var binanceSocketUrl  = `wss://stream.binance.com:9443/stream?streams=`;
+        var binanceSocketUrl  = `wss://stream.binance.com:9443/stream?streams=btcusdt@ticker/`;
         SEMBOLLER.forEach(function(v,k){
           binanceSocketUrl += `${v.toLowerCase()}@ticker`;
           if(k != (SEMBOLLER.length - 1)){
@@ -459,7 +459,10 @@
         };
       }
 
+      var current_btcusdt = 0;
+
       function handleData(data){
+        if(data.s == "BTCUSDT"){ current_btcusdt = parseFloat(data.c); }
         document.querySelectorAll("[data-coin='"+data.s+"']").forEach(function(v,k){
           v.querySelector(".guncel_fiyat").innerHTML = parseFloat(data.c);
           var adet        = parseFloat(v.querySelector(".adet").innerHTML);
@@ -501,7 +504,7 @@
         if(parseFloat(toplamEder).toFixed(4) != NaN){
           let toplamm = parseFloat(toplamEder).toFixed(2);
           if(!isNaN(toplamm)){
-            document.querySelector("#toplam_eder").innerHTML = toplamm;
+            document.querySelector("#toplam_eder").innerHTML = `${toplamm} [₿${parseFloat(toplamm / current_btcusdt).toFixed(6)}]`;
             document.title = `$${toplamm} ($${parseFloat(toplamKarZarar).toFixed(2)})`;
           }
         }
