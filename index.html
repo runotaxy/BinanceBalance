@@ -105,7 +105,9 @@
       </nav>
       
       <br>
-      <button class="btn btn-dark btn-sm" id="siralaBtn" style="display: none;" onclick="sirala();">Tabloyu Sırala</button>
+      <div style="display:flex; justify-content: flex-end;">
+        <button class="btn btn-dark btn-sm" id="siralaBtn" style="display: none; margin-bottom: 20px;" onclick="sirala();">Tabloyu Sırala</button>
+      </div>
       <div class="row">
         <div class="col-sm-12">
           <div class="card">
@@ -531,7 +533,9 @@
           let toplamm = parseFloat(toplamEder).toFixed(2);
           if(!isNaN(toplamm)){
             if(sirala_btn_appeared == false){
-              // document.querySelector("#siralaBtn").style.display = "block";
+              if(window.innerWidth > 768){
+                document.querySelector("#siralaBtn").style.display = "block";
+              }
               sirala();
               sirala_btn_appeared = true;
             }
