@@ -105,13 +105,12 @@
       </nav>
       
       <br>
-
+      <button class="btn btn-dark btn-sm" id="siralaBtn" style="display: none;" onclick="sirala();">Tabloyu Sırala</button>
       <div class="row">
         <div class="col-sm-12">
           <div class="card">
             <div class="card-header">
               <strong>Sepetteki Coinler ($<span id="toplam_eder"><small>hesaplanıyor...</small></span>)</strong>
-              <button class="btn btn-dark btn-sm" id="siralaBtn" style="display: none; float: right;" onclick="sirala();">Tabloyu Sırala</button>
             </div>
             <div class="card-body" style="padding:0px;">
               <div class="table-responsive">
@@ -269,8 +268,6 @@
           var kar_zarar_yuzdesi = parseFloat(v.querySelector(".kar_zarar_yuzde").innerHTML);
           siralamaArr.push({ kz : kar_zarar_yuzdesi, html : v });
           if( k == (document.querySelectorAll("#mallar_table tbody tr").length - 1)){
-            console.log("sonuncu", v);
-
             siralamaArr.sort(function(a, b) {
                 return parseFloat(b.kz) - parseFloat(a.kz);
             });
@@ -534,7 +531,7 @@
           let toplamm = parseFloat(toplamEder).toFixed(2);
           if(!isNaN(toplamm)){
             if(sirala_btn_appeared == false){
-              document.querySelector("#siralaBtn").style.display = "block";
+              // document.querySelector("#siralaBtn").style.display = "block";
               sirala();
               sirala_btn_appeared = true;
             }
@@ -691,6 +688,10 @@
     </div>
     <div id="tv_chart_close" onclick="tv_close();">KAPAT</div>
     <style>
+      body.darkmode {
+        background: black;
+        filter: invert(1) hue-rotate(180deg);
+      }
       #tv_chart_container_wrapper {
         width: 100vw;
         height:100vh;
