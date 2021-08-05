@@ -111,6 +111,7 @@
           <div class="card">
             <div class="card-header">
               <strong>Sepetteki Coinler ($<span id="toplam_eder"><small>hesaplanıyor...</small></span>)</strong>
+              <button class="btn btn-dark btn-sm" id="siralaBtn" style="display: none; float: right;" onclick="sirala();">Tabloyu Sırala</button>
             </div>
             <div class="card-body" style="padding:0px;">
               <div class="table-responsive">
@@ -259,6 +260,32 @@
           addToArchieveTable(docData, doc.id);
         });
         $("#archieve_toplam_kar").text(parseFloat(totalArchieveKar).toFixed(4));
+      }
+
+      var siralamaArr = [];
+
+      function sirala(){
+        document.querySelectorAll("#mallar_table tbody tr").forEach((v,k)=>{
+          var kar_zarar_yuzdesi = parseFloat(v.querySelector(".kar_zarar_yuzde").innerHTML);
+          siralamaArr.push({ kz : kar_zarar_yuzdesi, html : v });
+          if( k == (document.querySelectorAll("#mallar_table tbody tr").length - 1)){
+            console.log("sonuncu", v);
+
+            siralamaArr.sort(function(a, b) {
+                return parseFloat(b.kz) - parseFloat(a.kz);
+            });
+
+            reArrangeTheTable();
+          }
+        })
+      }
+
+      function reArrangeTheTable(){
+        document.querySelectorAll("#mallar_table tbody tr").forEach((v,k)=>{  v.remove() })
+
+        siralamaArr.forEach((v,k)=>{
+          document.querySelector("#mallar_table tbody").appendChild(v.html);
+        })
       }
 
       function createFirstTimeDocForUser(){
@@ -484,6 +511,8 @@
         handleToplamlar();
       }
 
+      var sirala_btn_appeared = false;
+
       function handleToplamlar(){
         var rows = document.querySelectorAll("#mallar_table tbody tr");
         var toplamMaliyet = 0;
@@ -504,6 +533,11 @@
         if(parseFloat(toplamEder).toFixed(4) != NaN){
           let toplamm = parseFloat(toplamEder).toFixed(2);
           if(!isNaN(toplamm)){
+            if(sirala_btn_appeared == false){
+              document.querySelector("#siralaBtn").style.display = "block";
+              sirala();
+              sirala_btn_appeared = true;
+            }
             document.querySelector("#toplam_eder").innerHTML = `${toplamm} [₿${parseFloat(toplamm / current_btcusdt).toFixed(6)}]`;
             document.title = `$${toplamm} ($${parseFloat(toplamKarZarar).toFixed(2)})`;
           }
@@ -590,7 +624,8 @@
               <li><del>Geçmiş işlemler tablosu çalıştırılacak.</del></li>
               <li><del>Geçmiş işlemler tablosuna göndemek için; ana tablodaki işlemler kısmına, satıldı butonu eklenecek.</del></li>
               <li><del>Arşivden silme eklenecek</del></li>
-              <li>Tablo sıralama özelliği eklenecek</li>
+              <li><del>Tablo sıralama özelliği eklenecek</del></li>
+              <li><del>Sepetin BTC karşılığı eklenecek</del></li>
             </ol>
           </div>
           <div class="modal-footer">
