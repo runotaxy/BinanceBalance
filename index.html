@@ -69,58 +69,67 @@
     </div>
 
     <div id="loader">
-      <div id="loader_inner">
-        <div class="spinner-border" style="width: 3rem; height: 3rem;" role="status">
+      <div id="loader_inner" style="display: flex; align-items: center; justify-content: center;">
+        <div class="spinner-border" style="width: 10rem; height: 10rem;" role="status">
           <span class="visually-hidden">Loading...</span>
         </div>
       </div>
     </div>
 
-    <div class="container" id="main">
-      <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
-        <div class="container-fluid">
-          <a class="navbar-brand" href="#">SepetPRO</a>
-          <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
-            <span class="navbar-toggler-icon"></span>
-          </button>
-          <div class="collapse navbar-collapse" id="navbarSupportedContent">
-            <ul class="navbar-nav me-auto mb-2 mb-lg-0">
-              <li class="nav-item">
-                <a class="nav-link btn btn-light btn-sm" style="color:#000;" onclick="setTimeout(function(){ $('#yeni_sembol').select2({ dropdownParent: $('#yeniCoinModal') }); }, 1200)" aria-current="page" href="#" data-bs-toggle="modal" data-bs-target="#yeniCoinModal">Yeni Coin</a>
-              </li>
-              <li class="nav-item">
-                <a class="nav-link" aria-current="page" href="#" data-bs-toggle="modal" data-bs-target="#cryptoFearGreedIndex">Fear/Greed</a>
-              </li>
-              <li class="nav-item dropdown">
-                <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-                  Linkler
-                </a>
-                <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
-                  <li><a target="_blank" class="dropdown-item" href="https://www.coinmarketcap.com/">CoinMartketCap</a></li>
-                  <li><a target="_blank" class="dropdown-item" href="https://coin360.com/">Crypto Tree Map</a></li>
-                  <li><a target="_blank" class="dropdown-item" href="https://www.blockchaincenter.net/bitcoin-rainbow-chart/">Bitcoin RainbowChart</a></li>
-                  <li><a target="_blank" class="dropdown-item" href="https://www.blockchaincenter.net/ethereum-rainbow-chart/">Ethereum RainbowChart</a></li>
-                  <li><a target="_blank" class="dropdown-item" href="https://www.lookintobitcoin.com/charts/">LookIntoBTC Charts</a></li>
-                  <li><a target="_blank" class="dropdown-item" href="https://cryptoquant.com/overview/btc-exchange-flows">CryptoQuant Charts</a></li>
-                </ul>
-              </li>
-              <li class="nav-item dropdown">
-                <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-                  <span id="user_email"></span>
-                </a>
-                <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
-                  <li onclick="cikis();"><a class="dropdown-item" href="#">Çıkış</a></li>
-                </ul>
-              </li>
-            </ul>
-          </div>
+    <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
+      <div class="container">
+        <a class="navbar-brand" href="#">SepetPRO</a>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent"
+          aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+          <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarSupportedContent">
+          <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+            <li class="nav-item">
+              <a class="nav-link btn btn-light btn-sm" style="color:#000;"
+                onclick="setTimeout(function(){ $('#yeni_sembol').select2({ dropdownParent: $('#yeniCoinModal') }); }, 1200)"
+                aria-current="page" href="#" data-bs-toggle="modal" data-bs-target="#yeniCoinModal">Yeni Coin</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" aria-current="page" href="#" data-bs-toggle="modal"
+                data-bs-target="#cryptoFearGreedIndex">Fear/Greed</a>
+            </li>
+            <li class="nav-item dropdown">
+              <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown"
+                aria-expanded="false">
+                Linkler
+              </a>
+              <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
+                <li><a target="_blank" class="dropdown-item" href="https://www.coinmarketcap.com/">CoinMartketCap</a></li>
+                <li><a target="_blank" class="dropdown-item" href="https://coin360.com/">Crypto Tree Map</a></li>
+                <li><a target="_blank" class="dropdown-item"
+                    href="https://www.blockchaincenter.net/bitcoin-rainbow-chart/">Bitcoin RainbowChart</a></li>
+                <li><a target="_blank" class="dropdown-item"
+                    href="https://www.blockchaincenter.net/ethereum-rainbow-chart/">Ethereum RainbowChart</a></li>
+                <li><a target="_blank" class="dropdown-item" href="https://www.lookintobitcoin.com/charts/">LookIntoBTC
+                    Charts</a></li>
+                <li><a target="_blank" class="dropdown-item"
+                    href="https://cryptoquant.com/overview/btc-exchange-flows">CryptoQuant Charts</a></li>
+              </ul>
+            </li>
+            <li class="nav-item dropdown">
+              <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown"
+                aria-expanded="false">
+                <span id="user_email"></span>
+              </a>
+              <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
+                <li onclick="cikis();"><a class="dropdown-item" href="#">Çıkış</a></li>
+              </ul>
+            </li>
+          </ul>
         </div>
-      </nav>
-      
-      <br>
-      <div style="display:flex; justify-content: flex-end;">
-        <button class="btn btn-dark btn-sm" id="siralaBtn" style="display: none; margin-bottom: 20px;" onclick="sirala();">Tabloyu Sırala</button>
       </div>
+    </nav>
+    
+    <br>
+
+    <div class="container" id="main">
+
       <div class="row">
         <div class="col-sm-12">
 
@@ -149,7 +158,10 @@
                   </strong>
                 </div>
                 <div class="card-body" style="padding:0px;">
-              
+                  <div style="display:flex; justify-content: flex-end;">
+                    <button class="btn btn-dark btn-sm" id="siralaBtn" style="display: none; margin-bottom: 20px;"
+                      onclick="sirala();">Tabloyu Sırala</button>
+                  </div>
                   <!-- mallar table -->
                   <div class="table-responsive">
                     <table class="table table-striped" id="mallar_table" style="margin-bottom:0px;">
@@ -181,7 +193,9 @@
             </div>
             <div class="tab-pane fade" id="pills-profile" role="tabpanel" aria-labelledby="pills-profile-tab">
               <div class="card">
-                <div class="card-header">Orta Vadeli Sepet</div>
+                <div class="card-header">
+                  <strong>Orta Vadeli Sepet</strong>
+                </div>
                 <div class="card-body">
                   Yapım Aşamasında...
                 </div>
@@ -189,7 +203,9 @@
             </div>
             <div class="tab-pane fade" id="pills-contact" role="tabpanel" aria-labelledby="pills-contact-tab">
               <div class="card">
-                <div class="card-header">Uzun Vadeli Sepet</div>
+                <div class="card-header">
+                  <strong>Uzun Vadeli Sepet</strong>
+                </div>
                 <div class="card-body">
                   Yapım Aşamasında...
                 </div>
@@ -602,7 +618,7 @@
           if(!isNaN(toplamm)){
             if(sirala_btn_appeared == false){
               if(window.innerWidth > 768){
-                document.querySelector("#siralaBtn").style.display = "block";
+                //document.querySelector("#siralaBtn").style.display = "block";
               }
               sirala();
               sirala_btn_appeared = true;
@@ -788,6 +804,19 @@
         justify-content: center;
         align-items: center;
         display: none;
+      }
+
+      #loader {
+        backdrop-filter:blur(10px);
+        -webkit-backdrop-filter:blur(3px);
+        background:rgba(255,255,255,.43); 
+        width:100vw; 
+        height:100vh; 
+        position:fixed; 
+        z-index:9999; 
+        display: flex; 
+        align-items: center; 
+        justify-content: center;
       }
     </style>
 
