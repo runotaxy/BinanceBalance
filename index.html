@@ -58,6 +58,19 @@
         color: white;
         text-align: right;
       }
+
+      #loader {
+        backdrop-filter:blur(10px);
+        -webkit-backdrop-filter:blur(3px);
+        background:rgba(255,255,255,.43); 
+        width:100vw; 
+        height:100vh; 
+        position:fixed; 
+        z-index:9999; 
+        display: flex; 
+        align-items: center; 
+        justify-content: center;
+      }
     </style>
   </head>
   <body>
@@ -804,19 +817,6 @@
         justify-content: center;
         align-items: center;
         display: none;
-      }
-
-      #loader {
-        backdrop-filter:blur(10px);
-        -webkit-backdrop-filter:blur(3px);
-        background:rgba(255,255,255,.43); 
-        width:100vw; 
-        height:100vh; 
-        position:fixed; 
-        z-index:9999; 
-        display: flex; 
-        align-items: center; 
-        justify-content: center;
       }
     </style>
 
